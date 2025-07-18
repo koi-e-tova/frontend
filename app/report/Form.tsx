@@ -1,34 +1,45 @@
 'use client'
+
 import React, { useState } from 'react'
 import { useReports } from './ReportsContext'
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+import { isValidPhoneNumber } from 'react-phone-number-input'
 
 export default function Form() {
   const { addReport, error } = useReports()
 
-  const [form, setForm] = useState({
-    phone_number: '',
-    type: '',
-    description: '',
-  })
+  const [phone, setPhone] = useState<string | undefined>()
+  const [form, setForm] = useState({ type: '', description: '' })
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setSubmitError('')
+    setLoading(true)
+
+    if (!phone || !isValidPhoneNumber(phone)) {
+      setSubmitError('Please enter a valid phone number')
+      setLoading(false)
+      return
+    }
 
     try {
-      await addReport(form)
-      setForm({ phone_number: '', type: '', description: '' })
+      await addReport({
+        phone_number: phone, // already formatted in E.164
+        ...form,
+      })
+      setPhone(undefined)
+      setForm({ type: '', description: '' })
     } catch (err) {
-      setSubmitError('Failed to submit report')
       console.error(err)
+      setSubmitError('Failed to submit report')
     }
 
     setLoading(false)
@@ -36,13 +47,13 @@ export default function Form() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded shadow">
-      <input
-        name="phone_number"
-        value={form.phone_number}
-        onChange={handleChange}
-        placeholder="Phone Number"
-        required
-        className="w-full p-2 border rounded"
+      <PhoneInput
+        international
+        defaultCountry="BG"
+        value={phone}
+        onChange={setPhone}
+        className="phone-input w-full"
+        placeholder="Enter phone number"
       />
       <select name="type" value={form.type} onChange={handleChange} required className="w-full p-2 border rounded">
         <option value="">Select Scam Type</option>
