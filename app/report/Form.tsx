@@ -1,5 +1,6 @@
 'use client'
 
+import { getVisitorId } from '@/lib/getFingerprint'
 import React, { useState } from 'react'
 import { useReports } from './ReportsContext'
 import PhoneInput from 'react-phone-number-input'
@@ -20,6 +21,8 @@ export default function Form() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const reporter_id = await getVisitorId()
+    console.log(reporter_id)
     e.preventDefault()
     setSubmitError('')
     setLoading(true)
@@ -33,7 +36,8 @@ export default function Form() {
     try {
       await addReport({
         phone_number: phone, // already formatted in E.164
-        ...form,
+        reporter_id: reporter_id,
+        ...form
       })
       setPhone(undefined)
       setForm({ type: '', description: '' })

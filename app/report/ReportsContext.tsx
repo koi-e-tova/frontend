@@ -8,6 +8,7 @@ export type PhoneReport = {
   type: string
   description: string
   reported_at: string
+  reporter_id: string
 }
 
 type ReportsContextType = {
