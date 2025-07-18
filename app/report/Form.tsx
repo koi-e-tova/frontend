@@ -21,9 +21,9 @@ export default function Form() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     const reporter_id = await getVisitorId()
     console.log(reporter_id)
-    e.preventDefault()
     setSubmitError('')
     setLoading(true)
 
