@@ -27,7 +27,8 @@ export function Hero() {
       <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-2xl text-center">
         A public database for reporting and tracking{" "}
         <span className="font-bold text-red-600">phone scams</span> in{" "}
-        <span className="font-bold">Bulgaria</span> — built with{" "}
+        <span className="font-bold">Bulgaria</span>
+        {/* <span className="font-bold">Bulgaria</span> — built with{" "}
         <a
           href="https://supabase.com/"
           target="_blank"
@@ -44,7 +45,7 @@ export function Hero() {
           rel="noreferrer"
         >
           Next.js
-        </a>
+        </a> */}
         .
       </p>
 
