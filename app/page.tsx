@@ -24,9 +24,11 @@ export default function Home() {
           <main className="flex-1 flex flex-col gap-6 px-4">
             <h2 className="font-medium text-xl mb-4">Next steps</h2>
             {/* {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />} */}
-            <section className="max-w-xl mx-auto text-center space-y-6 p-6 bg-gray-50 rounded-md shadow-md">
-              <h2 className="text-2xl font-semibold">Help Us Build a Safer Community</h2>
-              <p className="text-gray-700">
+            <section className="max-w-xl mx-auto text-center space-y-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-md shadow-md">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                Help Us Build a Safer Community
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300">
                 Have you encountered a suspicious phone number? Report it now to help others stay alert
                 and protect themselves from phone scams in Bulgaria.
               </p>
@@ -37,6 +39,7 @@ export default function Home() {
                 Report a Scam Number
               </a>
             </section>
+
           </main>
         </div>
 
