@@ -28,6 +28,7 @@ export default function Form() {
       setForm({ phone_number: '', type: '', description: '' })
     } catch (err) {
       setSubmitError('Failed to submit report')
+      console.error(err)
     }
 
     setLoading(false)
