@@ -6,7 +6,12 @@ import { createClient } from '@/lib/supabase/client'
 const supabase = createClient()
 
 export function TopNumbersToday() {
-  const [topNumbers, setTopNumbers] = useState<any[]>([])
+  type TopNumber = {
+    phone_number: string;
+    report_count: number;
+  };
+
+  const [topNumbers, setTopNumbers] = useState<TopNumber[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,10 +34,10 @@ export function TopNumbersToday() {
   return (
     <div className="bg-white p-6 shadow-md rounded-md my-6">
       <h2 className="text-xl font-semibold mb-4">
-        Today's Hot 5
+        Today&rsquo;s Top 5
       </h2>
       <ul className="space-y-2">
-        {topNumbers.map((item, index) => (
+        {topNumbers.map((item) => (
           <li
             key={item.phone_number}
             className="flex justify-between border-b pb-1 text-sm"
