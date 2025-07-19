@@ -1,6 +1,6 @@
 import { ReportsProvider } from './ReportsContext'
 import Form from './Form'
-import { TopNumbersToday } from "@/components/today-hot-top-5"
+import { TopNumbersToday } from "@/app/report/today-hot-top-5"
 
 export default function ReportPage() {
   return (
