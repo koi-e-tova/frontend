@@ -9,6 +9,7 @@ export type PhoneReport = {
   description: string
   reported_at: string
   reporter_id: string
+  hcaptcha_token: string
 }
 
 type ReportsContextType = {
@@ -46,10 +47,25 @@ export const ReportsProvider = ({ children }: { children: React.ReactNode }) => 
   }
 
   const addReport = async (report: Omit<PhoneReport, 'id' | 'reported_at'>) => {
-    const { error } = await supabase.from('phone_reports').insert([report])
-    if (error) {
-      setError(error.message)
-      throw error
+    // const { error } = await supabase.from('phone_reports').insert([report])
+    // if (error) {
+    //   setError(error.message)
+    //   throw error
+    // } else {
+    //   await fetchReports()
+    // }
+    const response = await fetch('/api/submit-report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(report),
+    })
+
+    if (!response.ok) {
+      const { error } = await response.json()
+      setError(error)
+      throw new Error(error)
     } else {
       await fetchReports()
     }
