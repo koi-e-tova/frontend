@@ -1,34 +1,16 @@
-// components/TopNumbersToday.tsx
 'use client'
-import { useEffect, useState } from "react"
-import { createClient } from '@/lib/supabase/client'
-
-const supabase = createClient()
+import React from 'react'
+import { useReports } from './ReportsContext'
 
 export function TopNumbersToday() {
-  type TopNumber = {
-    phone_number: string;
-    report_count: number;
-  };
+  const {
+    topNumbers,
+    loadingTopNumbers,
+    errorTopNumbers
+  } = useReports()
 
-  const [topNumbers, setTopNumbers] = useState<TopNumber[]>([])
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabase
-        .from("today_hot_5")
-        .select("*")
-
-      if (error) {
-        console.error("Error fetching top numbers:", error)
-      } else {
-        setTopNumbers(data)
-      }
-    }
-
-    fetchData()
-  }, [])
-
+  if (loadingTopNumbers) return <p>Loading top numbers...</p>
+  if (errorTopNumbers) return <p className="text-red-600">Error: {errorTopNumbers}</p>
   if (topNumbers.length === 0) return null
 
   return (

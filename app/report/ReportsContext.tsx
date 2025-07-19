@@ -18,6 +18,15 @@ type ReportsContextType = {
   error: string
   fetchReports: () => void
   addReport: (report: Omit<PhoneReport, 'id' | 'reported_at'>) => Promise<void>
+  topNumbers: TopNumber[]
+  loadingTopNumbers: boolean
+  errorTopNumbers: string
+  fetchTopNumbers: () => void
+}
+
+type TopNumber = {
+  phone_number: string
+  report_count: number
 }
 
 const supabase = createClient()
@@ -28,6 +37,10 @@ export const ReportsProvider = ({ children }: { children: React.ReactNode }) => 
   const [reports, setReports] = useState<PhoneReport[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const [topNumbers, setTopNumbers] = useState<TopNumber[]>([])
+  const [loadingTopNumbers, setLoadingTopNumbers] = useState(true)
+  const [errorTopNumbers, setErrorTopNumbers] = useState('')
 
   const fetchReports = async () => {
     setLoading(true)
@@ -71,12 +84,41 @@ export const ReportsProvider = ({ children }: { children: React.ReactNode }) => 
     }
   }
 
+  const fetchTopNumbers = async () => {
+    setLoadingTopNumbers(true)
+    const { data, error } = await supabase
+      .from('today_hot_5')
+      .select('*')
+
+    if (error) {
+      setErrorTopNumbers(error.message)
+      console.error(error)
+    } else {
+      setTopNumbers(data || [])
+      setErrorTopNumbers('')
+    }
+    setLoadingTopNumbers(false)
+  }
+
   useEffect(() => {
     fetchReports()
+    fetchTopNumbers()
   }, [])
 
   return (
-    <ReportsContext.Provider value={{ reports, loading, error, fetchReports, addReport }}>
+    <ReportsContext.Provider
+      value={{
+        reports,
+        loading,
+        error,
+        fetchReports,
+        addReport,
+        topNumbers,
+        loadingTopNumbers,
+        errorTopNumbers,
+        fetchTopNumbers,
+      }}
+    >
       {children}
     </ReportsContext.Provider>
   )
