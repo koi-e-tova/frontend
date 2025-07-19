@@ -1,11 +1,12 @@
 'use client'
 
 import { getVisitorId } from '@/lib/getFingerprint'
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useReports } from './ReportsContext'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { isValidPhoneNumber } from 'react-phone-number-input'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 export default function Form() {
   const { addReport, error } = useReports()
@@ -14,6 +15,9 @@ export default function Form() {
   const [form, setForm] = useState({ type: '', description: '' })
   const [loading, setLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [hCaptchaToken, setHCaptchaToken] = useState<string | null>(null)
+
+  const captchaRef = useRef<HCaptcha>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -22,9 +26,14 @@ export default function Form() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const reporter_id = await getVisitorId()
-    console.log(reporter_id)
     setSubmitError('')
+
+    if (!hCaptchaToken) {
+      setSubmitError('Please complete the CAPTCHA verification.')
+      return
+    }
+
+    const reporter_id = await getVisitorId()
     setLoading(true)
 
     if (!phone || !isValidPhoneNumber(phone)) {
@@ -36,14 +45,19 @@ export default function Form() {
     try {
       await addReport({
         phone_number: phone, // already formatted in E.164
-        reporter_id: reporter_id,
-        ...form
+        reporter_id,
+        ...form,
+        hcaptcha_token: hCaptchaToken, // pass token to addReport for server-side verification
       })
       setPhone(undefined)
       setForm({ type: '', description: '' })
+      setHCaptchaToken(null)
+      captchaRef.current?.resetCaptcha() // reset hCaptcha widget
     } catch (err) {
       console.error(err)
       setSubmitError('Failed to submit report')
+      captchaRef.current?.resetCaptcha() // reset on error too
+      setHCaptchaToken(null)
     }
 
     setLoading(false)
@@ -74,6 +88,15 @@ export default function Form() {
         required
         className="w-full p-2 border rounded"
       />
+
+      <HCaptcha
+        sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+        onVerify={(token) => setHCaptchaToken(token)}
+        onExpire={() => setHCaptchaToken(null)}
+        ref={captchaRef}
+        theme="light"
+      />
+
       <button disabled={loading} type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
         {loading ? 'Submitting...' : 'Submit Report'}
       </button>

@@ -9,6 +9,7 @@ export type PhoneReport = {
   description: string
   reported_at: string
   reporter_id: string
+  hcaptcha_token: string
 }
 
 type ReportsContextType = {
